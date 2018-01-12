@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Glasenuhr</title>
+			<script>
+					var watches = [
+					  "Hundswache",
+					  "Morgenwache",
+					  "Vormittagswache",
+					  "Nachmittagswache",
+					  "Plattfusswache",
+					  "Abendwache"
+					],
+					now = new Date();
+					
+				(function() {
+				  var next = new Date();
+				  wache();
+				  if (next.getMinutes() <= 30) next.setMinutes(30);
+				  else {
+					next.setMinutes(0);
+					next.setHours(now.getHours() + 1);
+				  }
+				  setTimeout(glasen, next - now);
+				})();
+
+				function wache() {
+					document.getElementsByTagName('p')[0].innerHTML=(watches[Math.floor(now.getHours() / 4)] +
+					" (" + getglocke() + ")");
+				}
+
+				function getglocke() {
+				  var zeit = new Date(),
+					  stunde = zeit.getHours() % 4,
+					  min = Math.floor(zeit.getMinutes() / 30);
+				  if (stunde == 0 && min == 0) return 8;
+				  return stunde * 2 + min;
+				}
+				
+				function glasen() {
+				  var glocke = getglocke();
+				  wache();
+				  ton(glocke); AusgabeGlocke(glocke);
+				  setTimeout(glasen, 30 * 60 * 1000);
+				}
+				
+				function ton(num) {
+				  var pause = 1700,
+					  i = 0;
+				  function klingeln() { new Audio("bell.mp3").play(); } 
+				  function doubleklingeln() {                            
+					klingeln();
+					setTimeout(klingeln, 400);
+				  }
+				  while (num > 1) {
+					pause *= ++i;
+					setTimeout(doubleklingeln, pause);
+					num -= 2;
+				  }
+				  if (num == 1) setTimeout(klingeln, pause * i);
+				}
+				
+				function AusgabeGlocke(num) {
+				  var msg = "";
+				  while (num > 1) {
+					msg += "dingding ";
+					num -= 2;
+				  }
+				  if (num == 1) msg += "ding";
+				  document.getElementsByTagName('p')[1].innerHTML=msg;
+				}                                 
+			</script>
+	</head>
+		<body>
+			<h1 style="text-align:center;font-size:100px">Glasenuhr</h1>
+			<p id="text1" style="font-size:40px">Uhrzeit</p>
+			<p id="text2" style="font-size:40px">Glocke</p>
+			<button onclick="glasen()" style="float:left;font-size:40px;background-color:blue;color:white">Glasen</button>
+			<img src="uhr.jpg" style="width:800px;margin-top:-200px;margin-left:200px"></img>
+		</body>
+</html>
